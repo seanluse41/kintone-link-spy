@@ -1,0 +1,25 @@
+{
+  "name": "kintone-plugin-template",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build:config": "vite build --config vite.config.js --mode config",
+    "build:desktop": "vite build --config vite.config.js --mode desktop",
+    "build:mobile": "vite build --config vite.config.js --mode mobile",
+    "copy:manifest": "cp manifest.json plugin/manifest.json",
+    "build": "npm run build:config && npm run build:desktop && npm run build:mobile && npm run copy:manifest",
+    "pack": "kintone-plugin-packer --ppk private.ppk --out dist/plugin.zip plugin"
+  },
+  "dependencies": {
+    "@kintone/rest-api-client": "^6.0.0",
+    "i18next": "^25.7.4",
+    "kintone-ui-component": "^1.23.1"
+  },
+  "devDependencies": {
+    "@kintone/plugin-packer": "^8.0.0",
+    "@kintone/plugin-uploader": "^10.0.0",
+    "@sveltejs/vite-plugin-svelte": "^6.2.4",
+    "svelte": "^5.46.4",
+    "vite": "^7.3.1"
+  }
+}
