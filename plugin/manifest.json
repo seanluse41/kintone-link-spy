@@ -25,12 +25,12 @@
     ]
   },
   "name": {
-    "en": "LinkSpy",
-    "ja": "LinkSpy"
+    "en": "Link-Spy",
+    "ja": "Link-Spy"
   },
   "description": {
-    "en": "A Kintone Plugin Template that uses Vite, Svelte 5.0, Kintone UI Components, and has i18n ready",
-    "ja": "A Kintone Plugin Template that uses Vite, Svelte 5.0, Kintone UI Components, and has i18n ready"
+    "en": "Plugin to let Kintone Admins track how many times and who clicked links or attachments in a record.",
+    "ja": "Plugin to let Kintone Admins track how many times and who clicked links or attachments in a record."
   },
   "homepage_url": {
     "en": "https://kintone.dev",
