@@ -13,9 +13,16 @@ export function addBadges(trackableFields) {
     const badgeContainer = document.createElement('div');
     valueContainer.appendChild(badgeContainer);
     
+    let clicks = $state(field.clicks);
+    let isClicked = $state(false);
+    
     mount(Badge, {
       target: badgeContainer,
-      props: { count: 0 }
+      props: { 
+        get count() {
+          return clicks;
+        }
+      }
     });
     
     // Add click listener
@@ -25,7 +32,11 @@ export function addBadges(trackableFields) {
     
     if (clickableElement) {
       clickableElement.addEventListener('click', () => {
-        console.log('Clicked:', field.code, field.type, field.value);
+        if (!isClicked) {
+          clicks++;
+          isClicked = true;
+          console.log('Clicked:', field.code, 'Count:', clicks);
+        }
       });
     }
   });

@@ -4,6 +4,8 @@
   import Header from './components/Header.svelte';
   import { parseRecord } from './lib/parseRecord.js';
   import { addBadges } from './lib/addBadges.svelte.js';
+  import { getRepositoryRecord } from './lib/getRepositoryRecord.js';
+  import { getClickData } from './lib/getClickData.js';
 
   let { pluginId } = $props();
   
@@ -19,10 +21,17 @@
     heading = i18n.t('helloKintone');
     message = config.message;
 
+    const currentAppId = kintone.app.getId();
+    const repositoryRecord = await getRepositoryRecord(currentAppId);
+    const clickData = getClickData(repositoryRecord);
     const record = kintone.app.record.get();
     const formFields = await kintone.app.getFormFields();
-
     const trackableFields = parseRecord(record, formFields);
+    
+    trackableFields.forEach(field => {
+      field.clicks = clickData.get(field.code);
+    });
+    
     addBadges(trackableFields);
   });
 </script>
