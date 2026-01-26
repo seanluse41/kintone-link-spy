@@ -1,11 +1,10 @@
-export async function deleteRepositoryRecord(recordId) {
-  const REPOSITORY_APP_ID = 74;
+export async function deleteRepositoryRecord(recordId, repositoryAppId) {
   try {
     await kintone.api(
       kintone.api.url('/k/v1/records', true),
       'DELETE',
       {
-        app: REPOSITORY_APP_ID,
+        app: repositoryAppId,
         ids: [recordId]
       }
     );

@@ -1,12 +1,10 @@
-export async function getRepositoryRecord(currentAppId) {
-  const REPOSITORY_APP_ID = 74;
-  
+export async function getRepositoryRecord(currentAppId, repositoryAppId) {
   try {
     const resp = await kintone.api(
       kintone.api.url('/k/v1/records', true),
       'GET',
       {
-        app: REPOSITORY_APP_ID,
+        app: repositoryAppId,
         query: `appID = "${currentAppId}"`
       }
     );

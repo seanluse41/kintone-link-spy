@@ -3,13 +3,12 @@
   import Dialog from "../builders/desktop/dialog.svelte";
   import { deleteRepositoryRecord } from "../lib/requests/deleteRepositoryRecord.js";
 
-  let { recordId } = $props();
+  let { recordId, repositoryAppId, domain } = $props();
   
   let dialog;
-  const REPOSITORY_APP_ID = 74;
 
   function viewStats() {
-    const url = `https://sean.cybozu.com/k/${REPOSITORY_APP_ID}/show#record=${recordId}`;
+    const url = `https://${domain}/k/${repositoryAppId}/show#record=${recordId}`;
     window.open(url, '_blank');
   }
 
@@ -19,7 +18,7 @@
 
   async function handleDelete() {
     dialog.close();
-    const success = await deleteRepositoryRecord(recordId);
+    const success = await deleteRepositoryRecord(recordId, repositoryAppId);
     if (success) {
       alert('Stats deleted successfully');
       location.reload();

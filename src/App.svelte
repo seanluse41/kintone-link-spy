@@ -14,10 +14,19 @@
   let message = $state('');
   let isAdmin = $state(false);
   let recordId = $state(null);
+  let repositoryAppId = $state(null);
+  let domain = $state('');
 
   onMount(async () => {
     const i18n = await setupI18n();
     const config = kintone.plugin.app.getConfig(pluginId);
+    repositoryAppId = config.repositoryAppId;
+    
+    if (!repositoryAppId) {
+      console.warn('No repository app configured');
+      return;
+    }
+    
     const permissions = await kintone.app.getPermissions();
     isAdmin = permissions.editApp;
     heading = i18n.t('helloKintone');
@@ -26,15 +35,14 @@
     const currentUser = kintone.getLoginUser();
     const currentAppId = kintone.app.getId();
     const domainInfo = await kintone.getDomain();
-    const domain = `${domainInfo.subdomain}.${domainInfo.baseDomain}`;
-    console.log(domain)
-    const repositoryRecord = await getRepositoryRecord(currentAppId);
+    domain = `${domainInfo.subdomain}.${domainInfo.baseDomain}`;
+    
+    const repositoryRecord = await getRepositoryRecord(currentAppId, repositoryAppId);
     
     if (repositoryRecord) {
       recordId = repositoryRecord.$id.value;
       
-      // Update appViewers if user hasn't viewed the app before
-      await updateAppViewers(repositoryRecord, currentUser);
+      await updateAppViewers(repositoryRecord, currentUser, repositoryAppId);
       
       const clickData = getClickData(repositoryRecord);
       const record = kintone.app.record.get();
@@ -46,11 +54,11 @@
         field.currentUser = currentUser;
       });
       
-      addBadges(trackableFields, repositoryRecord, domain);
+      addBadges(trackableFields, repositoryRecord, domain, repositoryAppId);
     }
   });
 </script>
 
 {#if isAdmin && recordId}
-  <Header {heading} {message} {recordId} />
+  <Header {recordId} {repositoryAppId} {domain} />
 {/if}

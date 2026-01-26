@@ -1,10 +1,9 @@
-// addBadges.svelte.js
 import { mount } from 'svelte';
 import Badge from '../components/Badge.svelte';
 import UserModal from '../components/UserModal.svelte';
 import { updateRepositoryLink } from './requests/updateRepositoryLink.js';
 
-export function addBadges(trackableFields, repositoryRecord, domain) {
+export function addBadges(trackableFields, repositoryRecord, domain, repositoryAppId) {
   trackableFields.forEach(field => {
     if (!field.element) return;
     
@@ -18,7 +17,6 @@ export function addBadges(trackableFields, repositoryRecord, domain) {
     
     let clicks = $state(field.clicks);
     
-    // Check if user has already clicked this link using currentUser from field
     const linkTable = repositoryRecord.linkTable.value;
     const row = linkTable.find(r => r.value.linkField.value === field.code);
     const hasUserClicked = row?.value.users.value.some(u => u.code === field.currentUser.code) || false;
@@ -27,7 +25,6 @@ export function addBadges(trackableFields, repositoryRecord, domain) {
     
     const users = row?.value.users.value || [];
     
-    // Mount modal
     const modalContainer = document.createElement('div');
     document.body.appendChild(modalContainer);
     
@@ -60,7 +57,7 @@ export function addBadges(trackableFields, repositoryRecord, domain) {
         if (!isClicked) {
           clicks++;
           isClicked = true;
-          await updateRepositoryLink(repositoryRecord, field.code, field.currentUser);
+          await updateRepositoryLink(repositoryRecord, field.code, field.currentUser, repositoryAppId);
         }
       });
     }
