@@ -5,6 +5,7 @@
   import { parseRecord } from './lib/parseRecord.js';
   import { addBadges } from './lib/addBadges.svelte.js';
   import { getRepositoryRecord } from './lib/requests/getRepositoryRecord.js';
+  import { updateAppViewers } from './lib/requests/updateAppViewers.js';
   import { getClickData } from './lib/getClickData.js';
 
   let { pluginId } = $props();
@@ -21,8 +22,13 @@
     heading = i18n.t('helloKintone');
     message = config.message;
 
+    const currentUser = kintone.getLoginUser();
     const currentAppId = kintone.app.getId();
     const repositoryRecord = await getRepositoryRecord(currentAppId);
+    
+    // Update appViewers if user hasn't viewed the app before
+    await updateAppViewers(repositoryRecord, currentUser);
+    
     const clickData = getClickData(repositoryRecord);
     const record = kintone.app.record.get();
     const formFields = await kintone.app.getFormFields();
@@ -30,6 +36,7 @@
     
     trackableFields.forEach(field => {
       field.clicks = clickData.get(field.code);
+      field.currentUser = currentUser; // Add current user to each field
     });
     
     addBadges(trackableFields, repositoryRecord);

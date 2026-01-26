@@ -1,5 +1,5 @@
 // updateRepositoryLink.js
-export async function updateRepositoryLink(repositoryRecord, fieldCode) {
+export async function updateRepositoryLink(repositoryRecord, fieldCode, currentUser) {
   
   try {
     const linkTable = repositoryRecord.linkTable.value;
@@ -17,7 +17,6 @@ export async function updateRepositoryLink(repositoryRecord, fieldCode) {
     
     const currentClicks = parseInt(row.value.clicks.value) || 0;
     const currentUsers = row.value.users.value || [];
-    const currentUser = kintone.getLoginUser();
 
     // Check if user already clicked
     const userAlreadyClicked = currentUsers.some(u => u.code === currentUser.code);

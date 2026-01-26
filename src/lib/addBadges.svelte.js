@@ -4,8 +4,6 @@ import Badge from '../components/Badge.svelte';
 import { updateRepositoryLink } from './requests/updateRepositoryLink.js';
 
 export function addBadges(trackableFields, repositoryRecord) {
-  const currentUser = kintone.getLoginUser();
-  
   trackableFields.forEach(field => {
     if (!field.element) return;
     
@@ -19,10 +17,10 @@ export function addBadges(trackableFields, repositoryRecord) {
     
     let clicks = $state(field.clicks);
     
-    // Check if user has already clicked this link
+    // Check if user has already clicked this link using currentUser from field
     const linkTable = repositoryRecord.linkTable.value;
     const row = linkTable.find(r => r.value.linkField.value === field.code);
-    const hasUserClicked = row?.value.users.value.some(u => u.code === currentUser.code) || false;
+    const hasUserClicked = row?.value.users.value.some(u => u.code === field.currentUser.code) || false;
     
     let isClicked = $state(hasUserClicked);
     
@@ -45,7 +43,7 @@ export function addBadges(trackableFields, repositoryRecord) {
           clicks++;
           isClicked = true;
           console.log('Clicked:', field.code, 'Count:', clicks);
-          await updateRepositoryLink(repositoryRecord, field.code);
+          await updateRepositoryLink(repositoryRecord, field.code, field.currentUser);
         }
       });
     }
