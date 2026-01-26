@@ -1,4 +1,7 @@
-export function parseTable(record, formFields, getLinkElements, getFileElements) {
+  import { getLinkElements } from './getLinkElements.js';
+  import { getFileElements } from './getFileElements.js';
+
+export function parseRecord(record, formFields) {
   const trackableFields = [];
 
   Object.entries(record.record).forEach(([code, field]) => {

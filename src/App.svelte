@@ -2,9 +2,7 @@
   import { onMount } from 'svelte';
   import { setupI18n } from './i18n.js';
   import Header from './components/Header.svelte';
-  import { getLinkElements } from './lib/getLinkElements.js';
-  import { getFileElements } from './lib/getFileElements.js';
-  import { parseTable } from './lib/parseTable.js';
+  import { parseRecord } from './lib/parseRecord.js';
 
   let { pluginId } = $props();
   
@@ -23,7 +21,7 @@
     const record = kintone.app.record.get();
     const formFields = await kintone.app.getFormFields();
 
-    const trackableFields = parseTable(record, formFields, getLinkElements, getFileElements);
+    const trackableFields = parseRecord(record, formFields);
 
     console.log('Trackable fields:', trackableFields);
   });
