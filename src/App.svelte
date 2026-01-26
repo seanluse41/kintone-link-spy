@@ -4,7 +4,7 @@
   import Header from './components/Header.svelte';
   import { parseRecord } from './lib/parseRecord.js';
   import { addBadges } from './lib/addBadges.svelte.js';
-  import { getRepositoryRecord } from './lib/getRepositoryRecord.js';
+  import { getRepositoryRecord } from './lib/requests/getRepositoryRecord.js';
   import { getClickData } from './lib/getClickData.js';
 
   let { pluginId } = $props();
