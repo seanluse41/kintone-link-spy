@@ -13,6 +13,7 @@
   let heading = $state('');
   let message = $state('');
   let isAdmin = $state(false);
+  let recordId = $state(null);
 
   onMount(async () => {
     const i18n = await setupI18n();
@@ -26,23 +27,27 @@
     const currentAppId = kintone.app.getId();
     const repositoryRecord = await getRepositoryRecord(currentAppId);
     
-    // Update appViewers if user hasn't viewed the app before
-    await updateAppViewers(repositoryRecord, currentUser);
-    
-    const clickData = getClickData(repositoryRecord);
-    const record = kintone.app.record.get();
-    const formFields = await kintone.app.getFormFields();
-    const trackableFields = parseRecord(record, formFields);
-    
-    trackableFields.forEach(field => {
-      field.clicks = clickData.get(field.code);
-      field.currentUser = currentUser; // Add current user to each field
-    });
-    
-    addBadges(trackableFields, repositoryRecord);
+    if (repositoryRecord) {
+      recordId = repositoryRecord.$id.value;
+      
+      // Update appViewers if user hasn't viewed the app before
+      await updateAppViewers(repositoryRecord, currentUser);
+      
+      const clickData = getClickData(repositoryRecord);
+      const record = kintone.app.record.get();
+      const formFields = await kintone.app.getFormFields();
+      const trackableFields = parseRecord(record, formFields);
+      
+      trackableFields.forEach(field => {
+        field.clicks = clickData.get(field.code);
+        field.currentUser = currentUser;
+      });
+      
+      addBadges(trackableFields, repositoryRecord);
+    }
   });
 </script>
 
-{#if isAdmin}
-  <Header {heading} {message} />
+{#if isAdmin && recordId}
+  <Header {heading} {message} {recordId} />
 {/if}
