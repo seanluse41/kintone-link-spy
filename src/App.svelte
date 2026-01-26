@@ -38,7 +38,7 @@
     domain = `${domainInfo.subdomain}.${domainInfo.baseDomain}`;
     
     const repositoryRecord = await getRepositoryRecord(currentAppId, repositoryAppId);
-    
+    console.log(repositoryRecord)
     if (repositoryRecord) {
       recordId = repositoryRecord.$id.value;
       

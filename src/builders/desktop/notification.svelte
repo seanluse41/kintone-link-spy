@@ -32,10 +32,20 @@
   });
   
   export function open() {
+    // Update text before opening
+    if (notification && text !== undefined) {
+      notification.text = text;
+    }
     notification?.open();
   }
   
   export function close() {
     notification?.close();
+  }
+  
+  export function setText(newText) {
+    if (notification) {
+      notification.text = newText;
+    }
   }
 </script>
