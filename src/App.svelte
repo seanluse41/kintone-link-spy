@@ -3,6 +3,7 @@
   import { setupI18n } from './i18n.js';
   import Header from './components/Header.svelte';
   import { parseRecord } from './lib/parseRecord.js';
+  import { addBadges } from './lib/addBadges.svelte.js';
 
   let { pluginId } = $props();
   
@@ -22,8 +23,7 @@
     const formFields = await kintone.app.getFormFields();
 
     const trackableFields = parseRecord(record, formFields);
-
-    console.log('Trackable fields:', trackableFields);
+    addBadges(trackableFields);
   });
 </script>
 
