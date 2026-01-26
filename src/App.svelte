@@ -25,6 +25,9 @@
 
     const currentUser = kintone.getLoginUser();
     const currentAppId = kintone.app.getId();
+    const domainInfo = await kintone.getDomain();
+    const domain = `${domainInfo.subdomain}.${domainInfo.baseDomain}`;
+    console.log(domain)
     const repositoryRecord = await getRepositoryRecord(currentAppId);
     
     if (repositoryRecord) {
@@ -43,7 +46,7 @@
         field.currentUser = currentUser;
       });
       
-      addBadges(trackableFields, repositoryRecord);
+      addBadges(trackableFields, repositoryRecord, domain);
     }
   });
 </script>

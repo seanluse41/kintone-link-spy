@@ -1,9 +1,10 @@
 // addBadges.svelte.js
 import { mount } from 'svelte';
 import Badge from '../components/Badge.svelte';
+import UserModal from '../components/UserModal.svelte';
 import { updateRepositoryLink } from './requests/updateRepositoryLink.js';
 
-export function addBadges(trackableFields, repositoryRecord) {
+export function addBadges(trackableFields, repositoryRecord, domain) {
   trackableFields.forEach(field => {
     if (!field.element) return;
     
@@ -24,11 +25,28 @@ export function addBadges(trackableFields, repositoryRecord) {
     
     let isClicked = $state(hasUserClicked);
     
+    const users = row?.value.users.value || [];
+    
+    // Mount modal
+    const modalContainer = document.createElement('div');
+    document.body.appendChild(modalContainer);
+    
+    const modalComponent = mount(UserModal, {
+      target: modalContainer,
+      props: {
+        users,
+        domain
+      }
+    });
+    
     mount(Badge, {
       target: badgeContainer,
       props: { 
         get count() {
           return clicks;
+        },
+        onclick: () => {
+          modalComponent.open();
         }
       }
     });
@@ -42,7 +60,6 @@ export function addBadges(trackableFields, repositoryRecord) {
         if (!isClicked) {
           clicks++;
           isClicked = true;
-          console.log('Clicked:', field.code, 'Count:', clicks);
           await updateRepositoryLink(repositoryRecord, field.code, field.currentUser);
         }
       });
