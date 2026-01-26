@@ -1,7 +1,11 @@
+// addBadges.svelte.js
 import { mount } from 'svelte';
 import Badge from '../components/Badge.svelte';
+import { updateRepositoryLink } from './requests/updateRepositoryLink.js';
 
-export function addBadges(trackableFields) {
+export function addBadges(trackableFields, repositoryRecord) {
+  const currentUser = kintone.getLoginUser();
+  
   trackableFields.forEach(field => {
     if (!field.element) return;
     
@@ -14,7 +18,13 @@ export function addBadges(trackableFields) {
     valueContainer.appendChild(badgeContainer);
     
     let clicks = $state(field.clicks);
-    let isClicked = $state(false);
+    
+    // Check if user has already clicked this link
+    const linkTable = repositoryRecord.linkTable.value;
+    const row = linkTable.find(r => r.value.linkField.value === field.code);
+    const hasUserClicked = row?.value.users.value.some(u => u.code === currentUser.code) || false;
+    
+    let isClicked = $state(hasUserClicked);
     
     mount(Badge, {
       target: badgeContainer,
@@ -25,17 +35,17 @@ export function addBadges(trackableFields) {
       }
     });
     
-    // Add click listener
     const clickableElement = field.type === 'LINK' 
       ? valueContainer.querySelector('a')
       : valueContainer;
     
     if (clickableElement) {
-      clickableElement.addEventListener('click', () => {
+      clickableElement.addEventListener('click', async () => {
         if (!isClicked) {
           clicks++;
           isClicked = true;
           console.log('Clicked:', field.code, 'Count:', clicks);
+          await updateRepositoryLink(repositoryRecord, field.code);
         }
       });
     }

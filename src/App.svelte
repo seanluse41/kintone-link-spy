@@ -32,7 +32,7 @@
       field.clicks = clickData.get(field.code);
     });
     
-    addBadges(trackableFields);
+    addBadges(trackableFields, repositoryRecord);
   });
 </script>
 
