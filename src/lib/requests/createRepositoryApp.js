@@ -71,7 +71,45 @@ export async function createRepositoryApp() {
       addFieldsBody
     );
 
-    // Step 3: Deploy the app
+    // Step 3: Set app permissions (before deployment)
+    const permissionsBody = {
+      app: newAppId,
+      rights: [
+        {
+          entity: {
+            type: 'CREATOR'
+          },
+          appEditable: true,
+          recordViewable: true,
+          recordAddable: false,
+          recordEditable: false,
+          recordDeletable: false,
+          recordImportable: false,
+          recordExportable: false
+        },
+        {
+          entity: {
+            type: 'GROUP',
+            code: 'everyone'
+          },
+          appEditable: false,
+          recordViewable: false,
+          recordAddable: false,
+          recordEditable: false,
+          recordDeletable: false,
+          recordImportable: false,
+          recordExportable: false
+        }
+      ]
+    };
+
+    await kintone.api(
+      kintone.api.url('/k/v1/preview/app/acl.json', true),
+      'PUT',
+      permissionsBody
+    );
+
+    // Step 4: Deploy the app
     const deployBody = {
       apps: [{ app: newAppId }]
     };
