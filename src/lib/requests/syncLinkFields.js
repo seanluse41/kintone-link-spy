@@ -1,10 +1,8 @@
-import { getRepositoryRecord } from './getRepositoryRecord.js';
+// Creates tracking repo record on new record save
 
-export async function syncLinkFields(repositoryAppId) {
+export async function createRepositoryRecord(currentAppId, currentRecordId, repositoryAppId) {
   try {
-    const currentAppId = kintone.app.getId();
-    
-    // Step 1: Get form fields and find all LINK/FILE fields
+    // Get form fields and find all LINK/FILE fields
     const formFieldsResponse = await kintone.api(
       kintone.api.url('/k/v1/app/form/fields', true),
       'GET',
@@ -27,87 +25,35 @@ export async function syncLinkFields(repositoryAppId) {
       }
     }
     
-    // Step 2: Check if repository record exists
-    const repositoryRecord = await getRepositoryRecord(currentAppId, repositoryAppId);
-    
-    if (!repositoryRecord) {
-      // Step 3a: Create new record with all fields
-      const linkTableValue = linkAndFileFields.map(fieldCode => ({
-        value: {
-          linkField: { value: fieldCode },
-          clicks: { value: '0' },
-          users: { value: [] }
-        }
-      }));
-      
-      await kintone.api(
-        kintone.api.url('/k/v1/record', true),
-        'POST',
-        {
-          app: repositoryAppId,
-          record: {
-            appID: { value: String(currentAppId) },
-            linkTable: { value: linkTableValue }
-          }
-        }
-      );
-      
-      return {
-        success: true,
-        isNew: true,
-        totalFields: linkAndFileFields.length
-      };
-    }
-    
-    // Step 3b: Update existing record - sync the subtable
-    const existingLinkTable = repositoryRecord.linkTable.value || [];
-    const existingFieldCodes = new Set(
-      existingLinkTable.map(row => row.value.linkField.value)
-    );
-    
-    // Keep existing rows that are still valid fields
-    const updatedLinkTable = existingLinkTable.filter(row => 
-      linkAndFileFields.includes(row.value.linkField.value)
-    );
-    
-    // Add new fields that don't exist yet
-    for (const fieldCode of linkAndFileFields) {
-      if (!existingFieldCodes.has(fieldCode)) {
-        updatedLinkTable.push({
-          value: {
-            linkField: { value: fieldCode },
-            clicks: { value: '0' },
-            users: { value: [] }
-          }
-        });
+    // Create repository record with all fields initialized to 0
+    const linkTableValue = linkAndFileFields.map(fieldCode => ({
+      value: {
+        linkField: { value: fieldCode },
+        clicks: { value: '0' },
+        users: { value: [] }
       }
-    }
+    }));
     
-    // Update the repository record
-    await kintone.api(
+    const response = await kintone.api(
       kintone.api.url('/k/v1/record', true),
-      'PUT',
+      'POST',
       {
         app: repositoryAppId,
-        id: repositoryRecord.$id.value,
         record: {
-          linkTable: { value: updatedLinkTable }
+          appID: { value: String(currentAppId) },
+          trackingRecord: { value: String(currentRecordId) },
+          linkTable: { value: linkTableValue }
         }
       }
     );
-    
-    const added = linkAndFileFields.filter(f => !existingFieldCodes.has(f)).length;
-    const removed = existingLinkTable.length - updatedLinkTable.length;
     
     return {
       success: true,
-      isNew: false,
-      addedCount: added,
-      removedCount: removed,
+      recordId: response.id,
       totalFields: linkAndFileFields.length
     };
   } catch (error) {
-    console.error('Error syncing link fields:', error);
+    console.error('Error creating repository record:', error);
     throw error;
   }
 }

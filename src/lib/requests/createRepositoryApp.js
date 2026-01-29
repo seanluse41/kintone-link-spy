@@ -23,13 +23,19 @@ export async function createRepositoryApp() {
           code: 'appID',
           label: 'App ID',
           noLabel: false,
-          required: true,
-          unique: true
+          required: true
         },
-        appViewers: {
+        trackingRecord: {
+          type: 'SINGLE_LINE_TEXT',
+          code: 'trackingRecord',
+          label: 'Tracking Record ID',
+          noLabel: false,
+          required: true
+        },
+        recordViewers: {
           type: 'USER_SELECT',
-          code: 'appViewers',
-          label: 'App Viewers',
+          code: 'recordViewers',
+          label: 'Record Viewers',
           noLabel: false,
           required: false
         },
@@ -81,8 +87,8 @@ export async function createRepositoryApp() {
           },
           appEditable: true,
           recordViewable: true,
-          recordAddable: false,
-          recordEditable: false,
+          recordAddable: true,
+          recordEditable: true,
           recordDeletable: false,
           recordImportable: false,
           recordExportable: false

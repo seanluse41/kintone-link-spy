@@ -1,8 +1,8 @@
-export async function updateAppViewers(repositoryRecord, currentUser, repositoryAppId) {
+export async function updateRecordViewers(repositoryRecord, currentUser, repositoryAppId) {
   if (!repositoryRecord) return false;
   
   try {
-    const currentViewers = repositoryRecord.appViewers.value || [];
+    const currentViewers = repositoryRecord.recordViewers.value || [];
     const hasViewed = currentViewers.some(u => u.code === currentUser.code);
     
     if (hasViewed) {
@@ -15,7 +15,7 @@ export async function updateAppViewers(repositoryRecord, currentUser, repository
       app: repositoryAppId,
       id: repositoryRecord.$id.value,
       record: {
-        appViewers: {
+        recordViewers: {
           value: updatedViewers
         }
       }

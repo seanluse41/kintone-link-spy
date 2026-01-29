@@ -5,7 +5,6 @@
   import Notification from './builders/desktop/notification.svelte';
   import Dialog from './builders/desktop/dialog.svelte';
   import { createRepositoryApp } from './lib/requests/createRepositoryApp.js';
-  import { syncLinkFields } from './lib/requests/syncLinkFields.js';
 
   let { pluginId } = $props();
   
@@ -29,7 +28,6 @@
   let infoNotification;
   let deleteDialog;
   let createDialog;
-  let syncDialog;
 
   let successText = $state('');
   let errorText = $state('');
@@ -73,26 +71,6 @@
       });
     } catch (error) {
       showError('Failed to create repository app');
-    }
-  }
-
-  function confirmSyncFields() {
-    if (!config.repositoryAppId) {
-      showError('Please set Repository App ID first');
-      return;
-    }
-    syncDialog.open();
-  }
-
-  async function handleSyncFields() {
-    syncDialog.close();
-    
-    try {
-      const result = await syncLinkFields(config.repositoryAppId);
-      const message = `Sync complete! ${result.totalFields} fields tracked`;
-      showSuccess(message);
-    } catch (error) {
-      showError('Failed to sync link fields');
     }
   }
 
@@ -165,30 +143,19 @@
         />
         
         <Button
-          text="Sync Link Fields"
-          type="normal"
-          onclick={confirmSyncFields}
-        />
-        
-        <Button
           text="Delete Repository App"
           type="normal"
           onclick={confirmDelete}
         />
       </div>
+      
+      <p class="info-text">
+        Note: Repository records are now created automatically per-record when viewed.
+      </p>
     </div>
 
     <div class="section">
       <h2>Options</h2>
-      
-      <div class="checkbox-container" data-field="autoSync">
-        <Checkbox
-          label="Auto Sync"
-          items={[{ label: 'Automatically sync link fields when record is saved', value: 'autoSync' }]}
-          value={config.autoSync ? ['autoSync'] : []}
-          onchange={handleCheckboxChange}
-        />
-      </div>
       
       <div class="checkbox-container" data-field="showBadges">
         <Checkbox
@@ -258,17 +225,6 @@
 />
 
 <Dialog
-  bind:this={syncDialog}
-  title="Sync Link Fields"
-  content="This will scan the current app for LINK and FILE fields and sync them to the repository app. Continue?"
-  icon="question"
-  buttons={[
-    { text: 'Cancel', type: 'normal', onclick: () => syncDialog.close() },
-    { text: 'Sync', type: 'submit', onclick: handleSyncFields }
-  ]}
-/>
-
-<Dialog
   bind:this={deleteDialog}
   title="Confirm Delete"
   content="Are you sure you want to delete the repository app?"
@@ -318,5 +274,11 @@
     display: flex;
     gap: 10px;
     justify-content: flex-end;
+  }
+  
+  .info-text {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #666;
   }
 </style>
